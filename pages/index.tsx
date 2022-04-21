@@ -94,7 +94,8 @@ const MainComponent = () => {
     if (loading) return;
     setLoading(true);
     setDisplayTweets([]);
-    return axios(`/api/all-replies?url=${query}`)
+    return axios
+      .post(`/api/all-replies?url=${query}`)
       .then((res) => {
         if (res && res.data.code === 200) {
           const result = res.data?.result;
