@@ -13,7 +13,7 @@ import {
 } from "antd";
 import mockData from "./mockData.json";
 import dayjs from "dayjs";
-import _, { cloneDeep } from "lodash";
+import _ from "lodash";
 
 console.info(
   dayjs("2022/04/22/23:30").isValid(),
@@ -128,7 +128,7 @@ const MainComponent = () => {
     >
       <Space align="baseline">
         <a
-          href="https://github.com/yzStrive/tw-replay-random-picker"
+          href="https://github.com/yzStrive/tw-replay-picker-sort-by-time"
           target="_blank"
           rel="noreferrer"
         >
