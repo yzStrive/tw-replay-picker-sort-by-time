@@ -67,9 +67,7 @@ export default async function handler(
     cache.set(url, data);
     res.status(200).json({
       code: 200,
-      result: data || [],
-      msg: "xxx",
-      token: process.env.TWITTER_BEARER_TOKEN,
+      result: data,
     });
   } catch (e) {
     res.status(500).json({
