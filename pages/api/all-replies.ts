@@ -54,10 +54,13 @@ export default async function handler(
 
   if (cache.has(url)) {
     const data = cache.get(url);
-    res.status(200).json({
-      code: 200,
-      result: data,
-    });
+    if (data) {
+      res.status(200).json({
+        code: 200,
+        result: data,
+        msg: "yyy",
+      });
+    }
   }
   try {
     const data = await queryAllReplies(uri, []);
@@ -65,6 +68,7 @@ export default async function handler(
     res.status(200).json({
       code: 200,
       result: data,
+      msg: "xxx",
     });
   } catch (e) {
     res.status(500).json({
