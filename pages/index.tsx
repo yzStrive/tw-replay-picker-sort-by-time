@@ -70,11 +70,16 @@ const filterByGuessTime = (
 
   const flatArray = _.flatMap(groupedObject);
 
-  return sortByGuessTime(flatArray)
-    .filter((item) => {
-      return sortFunction(item, timeFlagValue);
-    })
-    .slice(0, 21);
+  const validArrays = sortByGuessTime(flatArray).filter((item) => {
+    return sortFunction(item, timeFlagValue);
+  });
+  const first = validArrays?.[0];
+  const sameFirst = validArrays.filter((item) => {
+    const guessTime = item.text.split("@MoonLandingCMTY")[1];
+    const firstGuessTime = first.text.split("@MoonLandingCMTY")[1];
+    return dayjs(guessTime).valueOf() === dayjs(firstGuessTime).valueOf();
+  });
+  return [first].concat(...validArrays.slice(1, sameFirst.length + 20));
 };
 
 const query = "https://twitter.com/MoonLandingCMTY/status/1516920411207856128";
