@@ -102,26 +102,14 @@ const MainComponent = () => {
     if (loading) return;
     setLoading(true);
     setSorted([]);
-    axios
-      .post(`/api/all-replies?url=${query}`)
-      .then((res) => {
-        if (res && res.data.code === 200) {
-          const result = res.data?.result;
-          const allValidReplays = filterByGuessTime(result, timeFlag);
-          const sortedReplayIds = allValidReplays.map((item) => {
-            console.log(
-              item.text,
-              dayjs(item.created_at).format("YYYY/MM/DD HH:mm")
-            );
-            return item.id;
-          });
-          setSorted(sortedReplayIds);
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      })
-      .catch((err) => {});
+    // 说明：因为数据过多 垃圾白嫖服务器不行 直接快照数据
+    const result = mockData?.result;
+    const allValidReplays = filterByGuessTime(result, timeFlag);
+    const sortedReplayIds = allValidReplays.map((item) => {
+      console.log(item.text, dayjs(item.created_at).format("YYYY/MM/DD HH:mm"));
+      return item.id;
+    });
+    setSorted(sortedReplayIds);
   }, [loading, timeFlag]);
 
   const inputQuery = (e: any) => {
