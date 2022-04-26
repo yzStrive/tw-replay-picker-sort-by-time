@@ -160,7 +160,7 @@ const MainComponent = () => {
         <Row gutter={20}>
           {sortedIds.map((item, index) => {
             return (
-              <Col key={item.id_str}>
+              <Col key={item}>
                 {/* @ts-ignore */}
                 <Spin spinning={loading}>
                   {/* @ts-ignore */}

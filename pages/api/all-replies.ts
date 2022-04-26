@@ -26,7 +26,17 @@ const queryAllReplies = async (
       },
     });
     const data = result.data;
-    datas.push(...data.data);
+    datas.push(
+      ...data.data.map((item: any) => {
+        const { id, created_at, text, author_id } = item;
+        return {
+          id,
+          created_at,
+          text,
+          author_id,
+        };
+      })
+    );
     if (data.meta.next_token) {
       await queryAllReplies(uri, datas, data.meta.next_token);
     }
