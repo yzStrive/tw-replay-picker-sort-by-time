@@ -152,7 +152,7 @@ const MainComponent = () => {
                 {/* @ts-ignore */}
                 <Spin spinning={loading}>
                   {/* @ts-ignore */}
-                  <Badge count={index + 2}>
+                  <Badge count={index + 1}>
                     <Tweet
                       onLoad={() => {
                         setLoading(true);
