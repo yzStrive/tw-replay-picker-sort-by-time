@@ -90,7 +90,6 @@ const query = "https://twitter.com/MoonLandingCMTY/status/1516920411207856128";
 
 const MainComponent = () => {
   const [timeFlag, setTimeFlag] = useState();
-  const [loading, setLoading] = useState<boolean>(false);
   const [sortedIds, setSorted] = useState<any[]>([]);
   const randomPick = useCallback(() => {
     if (!timeFlag) {
@@ -99,8 +98,6 @@ const MainComponent = () => {
       });
       return;
     }
-    if (loading) return;
-    setLoading(true);
     setSorted([]);
     // 说明：因为数据过多 垃圾白嫖服务器不行 直接快照数据
     const result = mockData?.result;
@@ -110,7 +107,7 @@ const MainComponent = () => {
       return item.id;
     });
     setSorted(sortedReplayIds);
-  }, [loading, timeFlag]);
+  }, [timeFlag]);
 
   const inputQuery = (e: any) => {
     setTimeFlag(e.target.value);
@@ -142,37 +139,25 @@ const MainComponent = () => {
           style={{ paddingBottom: "20px", width: "400px" }}
         />
       </Space>
-      {/* @ts-ignore */}
-      <Spin spinning={loading}>
-        <h1>中奖者名单({sortedIds.length})</h1>
-        <Row gutter={20}>
-          {sortedIds.map((item, index) => {
-            return (
-              <Col key={item}>
-                {/* @ts-ignore */}
-                <Spin spinning={loading}>
-                  {/* @ts-ignore */}
-                  <Badge count={index + 1}>
-                    <Tweet
-                      onLoad={() => {
-                        setLoading(true);
-                        setTimeout(() => {
-                          setLoading(false);
-                        }, 3000);
-                      }}
-                      tweetId={item}
-                      options={{
-                        align: "center",
-                        theme: "dark",
-                      }}
-                    />
-                  </Badge>
-                </Spin>
-              </Col>
-            );
-          })}
-        </Row>
-      </Spin>
+      <h1>中奖者名单({sortedIds.length})</h1>
+      <Row gutter={20}>
+        {sortedIds.map((item, index) => {
+          return (
+            <Col key={item}>
+              {/* @ts-ignore */}
+              <Badge count={index + 1}>
+                <Tweet
+                  tweetId={item}
+                  options={{
+                    align: "center",
+                    theme: "dark",
+                  }}
+                />
+              </Badge>
+            </Col>
+          );
+        })}
+      </Row>
     </div>
   );
 };
