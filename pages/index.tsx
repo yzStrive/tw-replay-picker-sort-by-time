@@ -73,13 +73,17 @@ const filterByGuessTime = (
   const validArrays = sortByGuessTime(flatArray).filter((item) => {
     return sortFunction(item, timeFlagValue);
   });
-  const first = validArrays?.[0];
-  const sameFirst = validArrays.filter((item) => {
-    const guessTime = item.text.split("@MoonLandingCMTY")[1];
-    const firstGuessTime = first.text.split("@MoonLandingCMTY")[1];
-    return dayjs(guessTime).valueOf() === dayjs(firstGuessTime).valueOf();
+
+  validArrays.sort((a, b) => {
+    const guessTimeA = a.text.split("@MoonLandingCMTY")[1];
+    const guessTimeB = b.text.split("@MoonLandingCMTY")[1];
+    if (dayjs(guessTimeA).valueOf() === dayjs(guessTimeB).valueOf()) {
+      return dayjs(a.created_at).valueOf() - dayjs(b.created_at).valueOf();
+    } else {
+      return dayjs(guessTimeB).valueOf() - dayjs(guessTimeA).valueOf();
+    }
   });
-  return [first].concat(...validArrays.slice(1, sameFirst.length + 20));
+  return validArrays.slice(0, 20);
 };
 
 const query = "https://twitter.com/MoonLandingCMTY/status/1516920411207856128";
@@ -87,8 +91,7 @@ const query = "https://twitter.com/MoonLandingCMTY/status/1516920411207856128";
 const MainComponent = () => {
   const [timeFlag, setTimeFlag] = useState();
   const [loading, setLoading] = useState<boolean>(false);
-  const [displayTweets, setDisplayTweets] = useState<any[]>([]);
-
+  const [sortedIds, setSorted] = useState<any[]>([]);
   const randomPick = useCallback(() => {
     if (!timeFlag) {
       notification.warning({
@@ -98,22 +101,21 @@ const MainComponent = () => {
     }
     if (loading) return;
     setLoading(true);
-    setDisplayTweets([]);
-    return axios
+    setSorted([]);
+    axios
       .post(`/api/all-replies?url=${query}`)
       .then((res) => {
         if (res && res.data.code === 200) {
           const result = res.data?.result;
           const allValidReplays = filterByGuessTime(result, timeFlag);
-          allValidReplays.forEach((pick: any) => {
-            axios(`/api/random?id=${pick.id}`).then((res) => {
-              if (res && res.data.code === 200) {
-                setDisplayTweets((old) =>
-                  sortByGuessTime(old.concat(res.data.result))
-                );
-              }
-            });
+          const sortedReplayIds = allValidReplays.map((item) => {
+            console.log(
+              item.text,
+              dayjs(item.created_at).format("YYYY/MM/DD HH:mm")
+            );
+            return item.id;
           });
+          setSorted(sortedReplayIds);
         }
       })
       .finally(() => {
@@ -154,15 +156,15 @@ const MainComponent = () => {
       </Space>
       {/* @ts-ignore */}
       <Spin spinning={loading}>
-        <h1>中奖者名单({displayTweets.length})</h1>
+        <h1>中奖者名单({sortedIds.length})</h1>
         <Row gutter={20}>
-          {displayTweets.map((item, index) => {
+          {sortedIds.map((item, index) => {
             return (
               <Col key={item.id_str}>
                 {/* @ts-ignore */}
                 <Spin spinning={loading}>
                   {/* @ts-ignore */}
-                  <Badge count={index + 1}>
+                  <Badge count={index + 2}>
                     <Tweet
                       onLoad={() => {
                         setLoading(true);
@@ -170,7 +172,7 @@ const MainComponent = () => {
                           setLoading(false);
                         }, 3000);
                       }}
-                      tweetId={item.id_str}
+                      tweetId={item}
                       options={{
                         align: "center",
                         theme: "dark",
